@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mongo:
+    container_name: ohie-mongo
+    image: mongo:3.4
+    ports:
+      - "27017"
+
+  openhim-core:
+    container_name: ohie-openhim-core
+    image: jembi/openhim-core
+    environment:
+      mongo_url: mongodb://ohie-mongo/openhim
+      mongo_atnaUrl: "mongodb://ohie-mongo/openhim"
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  openhim-console:
+    container_name: ohie-openhim-console
+    image: jembi/openhim-console
+    ports:
+      - "9000:80"
+    volumes:
+      - ./console-config.json:/usr/share/nginx/html/config/default.json
